@@ -26,15 +26,24 @@ import { useForm } from "react-hook-form";
 import { todoFormSchema, TodoFormValues } from "@/validation";
 import { createTodoAction } from "@/actions/todoActions";
 import { Checkbox } from "./ui/checkbox";
+import { ModeToggle } from "./ModeToggle";
+import { useState } from "react";
+import Spinner from "./ui/Spinner";
 
 const AddTodoForm = () => {
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const defaultValues: Partial<TodoFormValues> = {
     title: "",
     body: "",
     completed: false,
   };
   async function onSubmit(data: TodoFormValues) {
+    setLoading(true);
     await createTodoAction({ title: data.title, body: data.body });
+    form.reset();
+    setLoading(false);
+    setOpen(false);
   }
 
   const form = useForm<TodoFormValues>({
@@ -43,93 +52,104 @@ const AddTodoForm = () => {
     mode: "onChange",
   });
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus />
-          New Todo
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add New Todo</DialogTitle>
-          <DialogDescription>
-            Make new todos to your profile here. Click save when you&apos;re
-            done.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-1">
-          <Form {...form}>
-            <form
-              id="todo-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter Title of Todo" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="body"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content of Todo</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Content of Todo"
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="completed"
-                render={({ field }) => (
-                  <FormItem className="flex gap-2 items-center">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                      />
-                    </FormControl>
-                    <FormLabel>Completed</FormLabel>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-
-          <Button type="submit" form="todo-form">
-            Save changes
+    <div className="flex flex-row-reverse gap-2 ms-auto">
+      {" "}
+      <ModeToggle />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button className=" w-fit cursor-pointer">
+            <Plus />
+            New Todo
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add New Todo</DialogTitle>
+            <DialogDescription>
+              Make new todos to your profile here. Click save when you&apos;re
+              done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-1">
+            <Form {...form}>
+              <form
+                id="todo-form"
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Title of Todo" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="body"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Content of Todo</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Content of Todo"
+                          className="resize-none"
+                          {...field}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="completed"
+                  render={({ field }) => (
+                    <FormItem className="flex gap-2 items-center">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormLabel>Completed</FormLabel>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+
+            {loading === true ? (
+              <Button type="submit" form="todo-form" disabled={loading}>
+                <Spinner />
+                Saving
+              </Button>
+            ) : (
+              <Button type="submit" form="todo-form">
+                Saving
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

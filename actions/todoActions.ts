@@ -1,5 +1,6 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 const prisma = new PrismaClient();
 
@@ -7,7 +8,14 @@ export const getTodoListAction = async () => {
   return prisma.todo.findMany();
 };
 export const updateTodoAction = async () => {};
-export const deleteTodoAction = async () => {};
+export const deleteTodoAction = async ({id}:{id :string}) => {
+  await prisma.todo.delete({
+    where : {
+      id
+    }
+  });
+  revalidatePath("/");
+};
 export const createTodoAction = async ({
   title,
   body,
@@ -20,4 +28,6 @@ export const createTodoAction = async ({
   await prisma.todo.create({
     data: { title, body ,completed},
   });
+  revalidatePath("/");
+
 };

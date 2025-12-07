@@ -1,9 +1,15 @@
+import { getTodoListAction } from "@/actions/todoActions";
 import AddTodoForm from "@/components/AddTodoForm";
+import TodosTable from "@/components/TodoTable";
 
-export default function Home() {
+export default async function Home() {
+  const todos = await getTodoListAction();
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <AddTodoForm />
-    </div>
+    <main className="container">
+      <div className="mx-auto flex w-full lg:w-1/2 flex-col justify-center space-y-4 mt-10">
+        <AddTodoForm />
+        <TodosTable todos={todos} />
+      </div>
+    </main>
   );
 }
