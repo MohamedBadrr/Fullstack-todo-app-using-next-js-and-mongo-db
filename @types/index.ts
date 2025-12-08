@@ -4,4 +4,5 @@ export type TODO = {
     body: string | null;
     completed: boolean;
     createdAt?: Date;
+    // user
 }
