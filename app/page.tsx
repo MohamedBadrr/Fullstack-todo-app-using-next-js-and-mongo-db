@@ -1,30 +1,17 @@
 import { getTodoListAction } from "@/actions/todoActions";
-import AddUpdateTodoForm from "@/components/AddUpdateTodoForm";
-import { ModeToggle } from "@/components/ModeToggle";
+import Nav from "@/components/Nav";
 import TodosTable from "@/components/TodoTable";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/nextjs";
+import { auth, getAuth } from "@clerk/nextjs/server";
 
 export default async function Home() {
-  const todos = await getTodoListAction();
+  const { userId } = await auth();
+
+  const todos = await getTodoListAction({ userId: userId ?? "" });
   return (
-    <main className="container">
+    <main className="px-3">
       <div className="mx-auto flex w-full lg:w-1/2 flex-col justify-center space-y-4 mt-10">
-        <div className="flex flex-row-reverse gap-2 ms-auto">
-          <ModeToggle />
-          <AddUpdateTodoForm />
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-        </div>
-        <TodosTable todos={todos} />
+        <Nav userId={userId ?? ""} />
+        <TodosTable todos={todos} userId={userId ?? ""} />
       </div>
     </main>
   );

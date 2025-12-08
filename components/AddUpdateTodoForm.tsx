@@ -29,17 +29,20 @@ import { ReactNode, useState } from "react";
 import Spinner from "./ui/Spinner";
 import { createTodoAction } from "@/actions/todoActions";
 import { TODO } from "@/@types";
+import { toast } from "sonner";
 
 const AddUpdateTodoForm = ({
   todo,
   isUpdate = false,
   openTrigger,
   handleOnSubmit,
+  userId,
 }: {
   todo?: TODO;
   isUpdate?: boolean;
   openTrigger?: ReactNode;
   handleOnSubmit?: (todo: TODO) => void;
+  userId?: string;
 }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -59,7 +62,17 @@ const AddUpdateTodoForm = ({
         title: data.title,
       });
     } else {
-      await createTodoAction({ title: data.title, body: data.body });
+      const result = await createTodoAction({
+        title: data.title,
+        body: data.body,
+        user_id: userId ?? "",
+        completed: data.completed,
+      });
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error("Some thing went wrong ");
+      }
     }
 
     form.reset();

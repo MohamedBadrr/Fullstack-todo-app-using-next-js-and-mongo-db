@@ -2,14 +2,24 @@
 import { TODO } from "@/@types";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { toast } from "sonner";
 
 const prisma = new PrismaClient();
 
-export const getTodoListAction = async () => {
-  return prisma.todo.findMany();
+export const getTodoListAction = async ({ userId }: { userId: string }) => {
+  return prisma.todo.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
 };
-export const updateTodoAction = async ({ id, title, body, completed }: TODO)=> {
-  // try {
+export const updateTodoAction = async ({
+  id,
+  title,
+  body,
+  completed,
+}: TODO) => {
+  try {
     await prisma.todo.update({
       where: {
         id,
@@ -20,32 +30,43 @@ export const updateTodoAction = async ({ id, title, body, completed }: TODO)=> {
         completed,
       },
     });
-
+      return { success: true, message: "Todo updated successfully" };
     revalidatePath("/");
-  // } catch (error) {
-  //   throw new Error("Something went wrong");
-  // }
+  } catch {
+    toast.error("Something went wrong");
+  }
 };
-export const deleteTodoAction = async ({id}:{id :string}) => {
-  await prisma.todo.delete({
-    where : {
-      id
-    }
-  });
-  revalidatePath("/");
+export const deleteTodoAction = async ({ id }: { id: string }) => {
+  try {
+    await prisma.todo.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath("/");
+      return { success: true, message: "Todo deleted successfully" };
+  } catch {
+    throw new Error("Something went wrong");
+  }
 };
 export const createTodoAction = async ({
   title,
   body,
-  completed
+  completed,
+  user_id,
 }: {
   title: string;
   body?: string;
-  completed? :boolean
+  completed?: boolean;
+  user_id: string;
 }) => {
-  await prisma.todo.create({
-    data: { title, body ,completed},
-  });
-  revalidatePath("/");
-
+  try {
+    await prisma.todo.create({
+      data: { title, body, completed, user_id },
+    });
+    revalidatePath("/");
+      return { success: true, message: "Todo created successfully" };
+  } catch {
+    throw new Error("Something went wrong");
+  }
 };

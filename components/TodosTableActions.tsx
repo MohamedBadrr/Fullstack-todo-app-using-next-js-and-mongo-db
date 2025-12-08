@@ -6,25 +6,36 @@ import { TODO } from "@/@types";
 import Spinner from "./ui/Spinner";
 import { deleteTodoAction, updateTodoAction } from "@/actions/todoActions";
 import AddUpdateTodoForm from "./AddUpdateTodoForm";
+import { toast } from "sonner";
 
 const TodosTableActions = ({ todo }: { todo: TODO }) => {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
     setLoading(true);
-    await deleteTodoAction({ id: todo.id });
+    const result = await deleteTodoAction({ id: todo.id });
     setLoading(false);
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error("Some thing went wrong ");
+    }
   };
 
   const handleUpdate = async (updatedTodo: TODO) => {
     setLoading(true);
-    await updateTodoAction({
+    const result = await updateTodoAction({
       body: updatedTodo.body,
       completed: updatedTodo.completed,
       id: updatedTodo.id,
       title: updatedTodo.title,
     });
     setLoading(false);
+    if (result?.success) {
+      toast.success(result.message);
+    } else {
+      toast.error("Some thing went wrong ");
+    }
   };
 
   return (
