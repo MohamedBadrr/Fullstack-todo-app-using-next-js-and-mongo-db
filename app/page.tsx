@@ -1,7 +1,7 @@
 import { getTodoListAction } from "@/actions/todoActions";
 import Nav from "@/components/Nav";
 import TodosTable from "@/components/TodoTable";
-import { auth, getAuth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function Home() {
   const { userId } = await auth();

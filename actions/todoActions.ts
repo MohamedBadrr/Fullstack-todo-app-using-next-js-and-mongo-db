@@ -30,7 +30,7 @@ export const updateTodoAction = async ({
         completed,
       },
     });
-      return { success: true, message: "Todo updated successfully" };
+    return { success: true, message: "Todo updated successfully" };
     revalidatePath("/");
   } catch {
     toast.error("Something went wrong");
@@ -44,7 +44,7 @@ export const deleteTodoAction = async ({ id }: { id: string }) => {
       },
     });
     revalidatePath("/");
-      return { success: true, message: "Todo deleted successfully" };
+    return { success: true, message: "Todo deleted successfully" };
   } catch {
     throw new Error("Something went wrong");
   }
@@ -65,7 +65,7 @@ export const createTodoAction = async ({
       data: { title, body, completed, user_id },
     });
     revalidatePath("/");
-      return { success: true, message: "Todo created successfully" };
+    return { success: true, message: "Todo created successfully" };
   } catch {
     throw new Error("Something went wrong");
   }

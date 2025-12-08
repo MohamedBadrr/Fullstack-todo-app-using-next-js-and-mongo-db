@@ -1,14 +1,14 @@
 import { prisma } from "../lib/prisma";
 import { faker } from "@faker-js/faker";
 async function main() {
-    // generate fake data for users 
-await prisma.todo.createMany({
-  data: Array.from({ length: 25 }, () => ({
-    title: faker.lorem.words({ min: 2, max: 5 }),
-    body: faker.lorem.words({ min: 1, max: 10 }),
-  })),
-});
-
+  // generate fake data for users
+  await prisma.todo.createMany({
+    data: Array.from({ length: 25 }, () => ({
+      title: faker.lorem.words({ min: 2, max: 5 }),
+      body: faker.lorem.words({ min: 1, max: 10 }),
+      user_id: faker.lorem.words({ min: 1, max: 1 }),
+    })),
+  });
 }
 
 main()

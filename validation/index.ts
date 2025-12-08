@@ -9,12 +9,8 @@ export const todoFormSchema = z.object({
     .max(30, {
       message: "Title must not be longer than 30 characters.",
     }),
-  body: z
-    .string() 
-    .optional(),
+  body: z.string().optional(),
   completed: z.boolean().optional(),
 });
 
 export type TodoFormValues = z.infer<typeof todoFormSchema>;
-
-// This can come from your database or API. 

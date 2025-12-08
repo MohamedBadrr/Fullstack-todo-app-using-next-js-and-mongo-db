@@ -5,5 +5,4 @@ export type TODO = {
     completed: boolean;
     createdAt?: Date;
     userId?: string
-    // user
 }
