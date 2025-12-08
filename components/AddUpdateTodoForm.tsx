@@ -24,23 +24,44 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { todoFormSchema, TodoFormValues } from "@/validation";
-import { createTodoAction } from "@/actions/todoActions";
 import { Checkbox } from "./ui/checkbox";
-import { ModeToggle } from "./ModeToggle";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import Spinner from "./ui/Spinner";
+import { createTodoAction } from "@/actions/todoActions";
+import { TODO } from "@/@types";
 
-const AddTodoForm = () => {
+const AddUpdateTodoForm = ({
+  todo,
+  isUpdate = false,
+  openTrigger,
+  handleOnSubmit,
+}: {
+  todo?: TODO;
+  isUpdate?: boolean;
+  openTrigger?: ReactNode;
+  handleOnSubmit?: (todo: TODO) => void;
+}) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const defaultValues: Partial<TodoFormValues> = {
-    title: "",
-    body: "",
-    completed: false,
+    title: todo?.title ?? "",
+    body: todo?.body ?? "",
+    completed: todo?.completed ?? false,
   };
   async function onSubmit(data: TodoFormValues) {
     setLoading(true);
-    await createTodoAction({ title: data.title, body: data.body });
+
+    if (handleOnSubmit) {
+      handleOnSubmit({
+        body: data.body ?? "",
+        completed: data.completed ?? false,
+        id: todo?.id ?? "",
+        title: data.title,
+      });
+    } else {
+      await createTodoAction({ title: data.title, body: data.body });
+    }
+
     form.reset();
     setLoading(false);
     setOpen(false);
@@ -52,15 +73,18 @@ const AddTodoForm = () => {
     mode: "onChange",
   });
   return (
-    <div className="flex flex-row-reverse gap-2 ms-auto">
+    <div className="">
       {" "}
-      <ModeToggle />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className=" w-fit cursor-pointer">
-            <Plus />
-            New Todo
-          </Button>
+          {openTrigger ? (
+            openTrigger
+          ) : (
+            <Button className=" w-fit cursor-pointer">
+              <Plus />
+              {isUpdate ? "Update Todo" : "New Todo"}
+            </Button>
+          )}
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -139,11 +163,11 @@ const AddTodoForm = () => {
             {loading === true ? (
               <Button type="submit" form="todo-form" disabled={loading}>
                 <Spinner />
-                Saving
+                {isUpdate ? "Updating" : "Saving"}
               </Button>
             ) : (
               <Button type="submit" form="todo-form">
-                Saving
+                {isUpdate ? "Update" : "Save"}
               </Button>
             )}
           </DialogFooter>
@@ -153,4 +177,4 @@ const AddTodoForm = () => {
   );
 };
 
-export default AddTodoForm;
+export default AddUpdateTodoForm;

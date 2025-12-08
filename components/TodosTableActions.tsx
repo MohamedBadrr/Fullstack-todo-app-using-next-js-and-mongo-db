@@ -1,13 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Pen, Trash } from "lucide-react";
-// import { deleteTodoAction } from "@/actions/todo.actions";
-
-// import EditTodoForm from "./EditTodoForm";
 import { TODO } from "@/@types";
 import Spinner from "./ui/Spinner";
-import { deleteTodoAction } from "@/actions/todoActions";
+import { deleteTodoAction, updateTodoAction } from "@/actions/todoActions";
+import AddUpdateTodoForm from "./AddUpdateTodoForm";
 
 const TodosTableActions = ({ todo }: { todo: TODO }) => {
   const [loading, setLoading] = useState(false);
@@ -17,17 +15,31 @@ const TodosTableActions = ({ todo }: { todo: TODO }) => {
     await deleteTodoAction({ id: todo.id });
     setLoading(false);
   };
- 
+
+  const handleUpdate = async (updatedTodo: TODO) => {
+    setLoading(true);
+    await updateTodoAction({
+      body: updatedTodo.body,
+      completed: updatedTodo.completed,
+      id: updatedTodo.id,
+      title: updatedTodo.title,
+    });
+    setLoading(false);
+  };
 
   return (
     <>
-      {/* <EditTodoForm todo={todo} /> */}
-      <Button
-        size={"icon"}
-        variant={"destructive"}
-        onClick={handleDelete}
-
-      >
+      <AddUpdateTodoForm
+        todo={todo}
+        isUpdate={true}
+        openTrigger={
+          <Button size={"icon"} variant={"outline"}>
+            <Pen />
+          </Button>
+        }
+        handleOnSubmit={handleUpdate}
+      />
+      <Button size={"icon"} variant={"destructive"} onClick={handleDelete}>
         {loading ? <Spinner /> : <Trash size={16} />}
       </Button>
     </>
