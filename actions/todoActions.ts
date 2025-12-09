@@ -2,7 +2,6 @@
 import { TODO } from "@/@types";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { toast } from "sonner";
 
 const prisma = new PrismaClient();
 
@@ -30,10 +29,10 @@ export const updateTodoAction = async ({
         completed,
       },
     });
-    return { success: true, message: "Todo updated successfully" };
     revalidatePath("/");
+    return { success: true, message: "Todo updated successfully" };
   } catch {
-    toast.error("Something went wrong");
+    throw new Error("Something went wrong");
   }
 };
 export const deleteTodoAction = async ({ id }: { id: string }) => {
